@@ -87,16 +87,7 @@ app.post("/",function(req,res){
 
 app.post("/delete",function(req,res){
   const checkedItemId = req.body.checkbox;
-  async function deleteData(checkedItemId) {
-    try {
-      await Item.findByIdAndRemove(checkedItemId);
-      
-      // handle the result of the operation
-    } catch (error) {
-      // handle any errors that occurred during the operation
-    }
-    
-  }  
+    Item.findByIdAndRemove(checkedItemId); 
       res.redirect("/");
       console.log("successfully deleted checked item");
       
