@@ -87,10 +87,13 @@ app.post("/",function(req,res){
 
 app.post("/delete",function(req,res){
   const checkedItemId = req.body.checkbox;
-    Item.findByIdAndRemove(checkedItemId); 
-      res.redirect("/");
-      console.log("successfully deleted checked item");
-      
+    Item.findByIdAndRemove(checkedItemId).then((doc)=> {
+       console.log("Successfully Deleted!");
+           res.redirect("/");
+      })
+     .catch((err)=>{
+       console.log(err)
+     })  
   });
 
 
