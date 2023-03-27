@@ -5,7 +5,7 @@ const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
 
-
+const lodash = require("lodash");
 
 app.set('view engine','ejs');
 
@@ -44,6 +44,13 @@ const item3 = new Item({
 const defaultItems = [item1,item2,item3];
 
 
+const listSchema = {
+  name:String,
+  items:[itemsSchema]
+};
+
+const List = mongoose.model("List",listSchema);
+
       app.get("/", async (req, res) => {
        try {
           const foundItems = await Item.find({ });
@@ -66,40 +73,67 @@ const defaultItems = [item1,item2,item3];
         }
       });
 
-//this is not worked in present version
-// app.get("/",function(req,res){
-//   Item.find({},function(err,foundItems){
-//     res.render("list",{listTitle: "Today",newListItems:foundItems});
-//   });
-// });
+app.get("/:customListName",function(req,res){
+  const customListName = lodash.capitalize(req.params.customListName);
+
+  List.findOne({name:customListName })
+  .then((docs)=>{
+       res.render("list",{listTitle:docs.name,newListItems: docs.items}) 
+  })
+  .catch((err)=>{
+    const list = new List({
+      name:customListName,
+      items:defaultItems
+    });
+    list.save();
+    res.redirect("/"+customListName);
+      console.log("its a new list");
+  }); 
+
+  
+});
 
 app.post("/",function(req,res){
   const itemName = req.body.newItem;
+  const listName = req.body.list;
 
   const item = new Item({
     name:itemName
   });
 
-  item.save();
+  if(listName==="Today"){
+    item.save();
   res.redirect("/");
-
+  }
+  else{
+    List.findOne({name:listName})
+    .then((docs)=>{
+        docs.items.push(item);
+        docs.save();
+        res.redirect("/"+listName);
+    });
+  }
 });
 
 app.post("/delete",function(req,res){
   const checkedItemId = req.body.checkbox;
+  const listName = req.body.listName;
+  if(listName==="Today"){
     Item.findByIdAndRemove(checkedItemId).then((doc)=> {
-       console.log("Successfully Deleted!");
-           res.redirect("/");
-      })
-     .catch((err)=>{
-       console.log(err)
-     })  
+      console.log("Successfully Deleted!");
+          res.redirect("/");
+     })
+    .catch((err)=>{
+      console.log(err)
+    })  
+  }
+  else{
+    List.findOneAndUpdate({name:listName},{$pull:{items:{_id:checkedItemId}}}).then((doc)=>{
+      res.redirect("/"+listName);
+    });
+  } 
+
   });
-
-
-app.get("/work",function(req,res){
-  res.render("list",{listTitle:"Work List",NewListItems:workItems})
-});
 
 
 app.listen(3000,function(){
