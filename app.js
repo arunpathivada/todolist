@@ -15,7 +15,7 @@ app.use(express.static("public"));
 
 
 //connect to mongodb..
-mongoose.connect("mongodb://localhost:27017/todolistDB");
+mongoose.connect("mongodb+srv://arunpathivada2002:arun2002@cluster0.oetth0n.mongodb.net/?retryWrites=true&w=majority");
 
 
 //creating a mongoose schema...
