@@ -5,7 +5,7 @@ const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
 
-const lodash = require("lodash");
+const _ = require("lodash");
 
 app.set('view engine','ejs');
 
@@ -74,7 +74,7 @@ const List = mongoose.model("List",listSchema);
       });
 
 app.get("/:customListName",function(req,res){
-  const customListName = lodash.capitalize(req.params.customListName);
+  const customListName = _.capitalize(req.params.customListName);
 
   List.findOne({name:customListName })
   .then((docs)=>{
