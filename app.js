@@ -18,6 +18,7 @@ app.use(express.static("public"));
 mongoose.connect("mongodb+srv://arunpathivada2002:arun2002@cluster0.oetth0n.mongodb.net/?retryWrites=true&w=majority");
 
 
+
 //creating a mongoose schema...
 const itemsSchema ={
    name:String
@@ -53,7 +54,7 @@ const List = mongoose.model("List",listSchema);
 
       app.get("/", async (req, res) => {
        try {
-          const foundItems = await Item.find({ });
+          const foundItems = await Item.find({});
 
           if(foundItems.length===0){
             Item.insertMany(defaultItems)
